@@ -11,7 +11,7 @@ import {
   orderByKey,
 } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { ref, onValue, set } from "firebase/database";
+import { ref, onValue, set, remove } from "firebase/database";
 
 // Local Import
 import { auth, db, myfirestore } from "./firebaseconfig";
@@ -73,9 +73,11 @@ export const Homepage = () => {
   };
 
   const deleteFirestoreData = () => {
-    const myDoc = doc(myfirestore, "Pokemon", "Random");
+    // const myDoc = doc(myfirestore, "Pokemon", "/");
+    const coll = collection(myfirestore, "Pokemon");
 
-    deleteDoc(myDoc)
+    // deleteDoc(myDoc)
+    deleteDoc(coll)
       .then(console.log("Deleted"))
       .catch((err) => {
         console.log(err);
@@ -115,12 +117,23 @@ export const Homepage = () => {
     });
   };
 
+  const deleteFromRealTime = () => {
+    remove(ref(db, "Testing/Alert"))
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <View>
       {/* <HomeScreen /> */}
       {/* <LoginScreen /> */}
       {/* <RegisterScreen /> */}
       {/* <Navigator /> */}
+      <Button title="Press" onPress={deleteFromRealTime} />
     </View>
   );
 };

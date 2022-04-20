@@ -104,14 +104,6 @@ export const LoginScreen = ({ navigation }) => {
             signIn();
           }}
         />
-
-        <CustomButton
-          title="Check user"
-          onPress={() => {
-            console.log("Uid: " + auth.currentUser.uid);
-            console.log(...auth.currentUser.providerData);
-          }}
-        />
         <CustomButton
           title="Go Back"
           onPress={() => {

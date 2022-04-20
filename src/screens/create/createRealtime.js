@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import { Dimensions } from "react-native";
 import { ref, set } from "firebase/database";
@@ -61,7 +61,7 @@ export const CreateRealtime = ({ navigation }) => {
       fArr.forEach((key, i) => {
         docArr[key] = vArr[i];
       });
-      const val = Math.random().toString(36).substring(2, 12);
+
       const timestamp = new Date();
       set(ref(db, id1 + "/" + id2), {
         ...docArr,
@@ -78,6 +78,7 @@ export const CreateRealtime = ({ navigation }) => {
             "Record created in Realtime Database Successfully"
           );
           setStatus("Create Realtime DB Record");
+          setAutoId();
         })
         .catch((error) => {
           console.log("Data Create Failure", error);
@@ -89,6 +90,17 @@ export const CreateRealtime = ({ navigation }) => {
       setStatus("Create Realtime DB Record");
     }
   };
+
+  const setAutoId = () => {
+    const val = Math.random().toString(36).substring(2, 12);
+    setId2(val);
+    ref_field2.current.value;
+  };
+
+  useEffect(() => {
+    // function to load here
+    setAutoId();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -106,14 +118,12 @@ export const CreateRealtime = ({ navigation }) => {
           }}
         />
         <CustomInput
-          placeholder="Id 2"
-          onChangeText={(newText) => setId2(newText)}
-          returnKeyType="next"
+          // placeholder="Id 2"
+          // onChangeText={(newText) => setId2(newText)}
+          // returnKeyType="next"
+          value={id2}
           ref={ref_field2}
-          editable={status == "Create Realtime DB Record" ? true : false}
-          onSubmitEditing={() => {
-            ref_field3.current.focus();
-          }}
+          editable={false}
         />
         <View style={styles.valuesContainer}>
           <TextInput

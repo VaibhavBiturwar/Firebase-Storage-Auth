@@ -15,6 +15,10 @@ import { ReadSelection } from "../screens/read/readSelection";
 import { ReadFirestore } from "../screens/read/readFirestore";
 import { ReadRealtime } from "../screens/read/readRealtime";
 
+import { DeleteSelection } from "../screens/delete/deleteSelection";
+import { DeleteFirestore } from "../screens/delete/deleteFirestore";
+import { DeleteRealtime } from "../screens/delete/deleteRealtime";
+
 export const Navigator = () => {
   const HomeStack = createNativeStackNavigator();
 
@@ -38,6 +42,10 @@ export const Navigator = () => {
       <HomeStack.Screen name="ReadSelection" component={ReadSelection} />
       <HomeStack.Screen name="ReadFirestore" component={ReadFirestore} />
       <HomeStack.Screen name="ReadRealtime" component={ReadRealtime} />
+
+      <HomeStack.Screen name="DeleteSelection" component={DeleteSelection} />
+      <HomeStack.Screen name="DeleteFirestore" component={DeleteFirestore} />
+      <HomeStack.Screen name="DeleteRealtime" component={DeleteRealtime} />
     </HomeStack.Navigator>
   );
 };

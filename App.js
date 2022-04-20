@@ -4,24 +4,29 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import { Navigator } from "./src/components/navigator";
 import { Homepage } from "./src/homepage";
+
 import { CreateFirestore } from "./src/screens/create/createFirestore";
 import { CreateRealtime } from "./src/screens/create/createRealtime";
+
 import { ReadFirestore } from "./src/screens/read/readFirestore";
-import { ReadFlatList } from "./src/screens/read/readFlatlist";
+import { ReadRealtime } from "./src/screens/read/readRealtime";
+
+import { DeleteSelection } from "./src/screens/delete/deleteSelection";
+import { DeleteRealtime } from "./src/screens/delete/deleteRealtime";
+import { DeleteFirestore } from "./src/screens/delete/deleteFirestore";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <ReadFirestore />
-      {/* <ReadFlatList /> */}
-    </View>
+    // <View style={styles.container}>
+    //   <StatusBar style="auto" />
+    //   <DeleteRealtime />
+    // </View>
 
     // ------------------------
 
-    // <NavigationContainer>
-    //   <Navigator />
-    // </NavigationContainer>
+    <NavigationContainer>
+      <Navigator />
+    </NavigationContainer>
   );
 }
 
