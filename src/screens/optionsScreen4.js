@@ -36,7 +36,13 @@ export const OptionsScreen = ({ navigation }) => {
             navigation.navigate("ReadSelection");
           }}
         />
-        <CustomButton title="Update" type="block" />
+        <CustomButton
+          title="Update"
+          type="block"
+          onPress={() => {
+            navigation.navigate("UpdateSelection");
+          }}
+        />
         <CustomButton
           title="Delete"
           type="block"

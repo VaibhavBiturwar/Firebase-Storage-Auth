@@ -94,7 +94,7 @@ export const CreateRealtime = ({ navigation }) => {
   const setAutoId = () => {
     const val = Math.random().toString(36).substring(2, 12);
     setId2(val);
-    ref_field2.current.value;
+    ref_field2.current.value; // ! delete this line and check
   };
 
   useEffect(() => {

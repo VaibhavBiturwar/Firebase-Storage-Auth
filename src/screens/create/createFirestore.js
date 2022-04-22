@@ -23,7 +23,8 @@ export const CreateFirestore = ({ navigation }) => {
 
   const createAlert = (title, desc) => {
     var text = "Try Again";
-    if ((title = "Success")) {
+    if (title == "Success") {
+      // ! updated ==
       text = "Ok";
     }
     Alert.alert(title, desc, [
