@@ -1,18 +1,45 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ToastAndroid, Alert } from "react-native";
 
 //  Local Imports
 import { auth } from "../firebaseconfig";
 import { CustomButton } from "../components/customButton";
 
 export const OptionsScreen = ({ navigation }) => {
+  const createAlert = () => {
+    Alert.alert("Are you sure", "Signout from Firebase Storage and Auth", [
+      {
+        text: "No",
+        onPress: () => {},
+      },
+      {
+        text: "Yes",
+        onPress: () => {
+          auth.signOut();
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "HomeScreen" }],
+          });
+        },
+      },
+    ]);
+  };
+
   useEffect(() => {
-    // function to load here
     if (auth != null) {
-      // console.log("Options Screen : User Present");
-      // console.log("UID: " + auth.currentUser.uid);
+      console.log("UID: " + auth.currentUser.uid);
+      ToastAndroid.show(
+        "Logged in as: " + auth.currentUser.email,
+        ToastAndroid.LONG
+      );
     } else {
-      console.log("Options Screen : User Not Present");
+      console.log(
+        "Options Screen : User Not Present | Navigating to homescreen"
+      );
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "HomeScreen" }],
+      });
     }
   }, []);
 
@@ -55,8 +82,7 @@ export const OptionsScreen = ({ navigation }) => {
       <CustomButton
         title="SignOut"
         onPress={() => {
-          auth.signOut();
-          navigation.replace("HomeScreen");
+          createAlert();
         }}
       />
     </View>

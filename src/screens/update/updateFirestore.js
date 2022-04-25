@@ -7,6 +7,7 @@ import {
   StatusBar,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 import { useIsFocused } from "@react-navigation/native";
@@ -19,6 +20,7 @@ import { CustomText } from "../../components/customText";
 export const UpdateFirestore = ({ navigation }) => {
   const [docName, setDocName] = useState(null);
   const [dataArr, setDataArr] = useState([]);
+  const [enable, setEnable] = useState(true);
 
   const isFocused = useIsFocused();
   var docArr = [];
@@ -27,6 +29,22 @@ export const UpdateFirestore = ({ navigation }) => {
       populateData(docName);
     }
   }, [isFocused]);
+
+  const createAlert = (title, desc) => {
+    var text = "Try Again";
+    if (title == "Success") {
+      text = "Ok";
+    }
+    Alert.alert(title, desc, [
+      {
+        text: text,
+        onPress: () => {
+          setEnable(true);
+          return;
+        },
+      },
+    ]);
+  };
 
   const RenderRocords = ({ item }) => {
     const title = item[0].doc;
@@ -58,10 +76,28 @@ export const UpdateFirestore = ({ navigation }) => {
     return <RenderRocords item={item} />;
   };
 
+  const checkInput = () => {
+    // console.log("Docname: " + docName);
+    setEnable(false);
+
+    if (docName == null || docName.trim().length == 0) {
+      createAlert("Error", "Please enter document name to search");
+      setEnable(true);
+      return;
+    }
+    populateData(docName);
+  };
+
   const populateData = async (docName) => {
     var count = 0;
     const coll = collection(myfirestore, docName);
     const querySnapshot = await getDocs(coll);
+    const dRec = JSON.stringify(querySnapshot._snapshot.docChanges); // * if empty length is 0
+    if (dRec.length == 2) {
+      console.log("Length: " + dRec.length);
+      createAlert("Error", "Incorrect Document Name");
+      return;
+    }
     docArr = [];
     querySnapshot.forEach((doc) => {
       const keys = Object.keys(doc.data());
@@ -73,6 +109,7 @@ export const UpdateFirestore = ({ navigation }) => {
       docArr.push(dArr);
     });
     setDataArr([...docArr]);
+    setEnable(true);
   };
 
   return (
@@ -80,10 +117,12 @@ export const UpdateFirestore = ({ navigation }) => {
       <View>
         <Text style={styles.headingText}>Update Firestore Data</Text>
         <CustomInput
+          editable={enable}
           placeholder="Document Name "
           onChangeText={(newText) => setDocName(newText)}
           onSubmitEditing={async () => {
-            populateData(docName);
+            // populateData(docName);
+            checkInput(docName);
           }}
         />
       </View>
@@ -97,6 +136,7 @@ export const UpdateFirestore = ({ navigation }) => {
       )}
 
       <CustomButton
+        disabled={!enable}
         title="Go Back"
         onPress={() => {
           navigation.pop();

@@ -27,18 +27,20 @@ export const LoginScreen = ({ navigation }) => {
 
   const signIn = () => {
     //   admin@admin.com 1234567890
-    console.log("Signing in....");
+    // console.log("Signing in....");
     setStatus("Signing in....");
     setTimeout(() => {
       signInWithEmailAndPassword(auth, email, password)
         .then((user) => {
           console.log("user Authenticated");
           setStatus("Signed in Successfully");
-          navigation.replace("OptionsScreen");
+          // navigation.replace("OptionsScreen");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "OptionsScreen" }],
+          });
         })
         .catch((e) => {
-          //   console.log(e);
-          //   console.log(e.toString().split("/")[1].split(")")[0]);
           console.log(
             "Signing Failed: " + e.toString().split("/")[1].split(")")[0]
           );
@@ -49,7 +51,7 @@ export const LoginScreen = ({ navigation }) => {
   };
 
   navigation.onBack = () => {
-    navigation.replace("HomeScreen");
+    navigation.pop();
   };
 
   return (
@@ -66,7 +68,6 @@ export const LoginScreen = ({ navigation }) => {
           editable={status == "Login" ? true : false}
           ref={ref_input1}
           onSubmitEditing={() => {
-            console.log("OnSubmit :" + email);
             ref_input2.current.focus();
           }}
           onChangeText={(newText) => {
@@ -80,7 +81,6 @@ export const LoginScreen = ({ navigation }) => {
           ref={ref_input2}
           onSubmitEditing={() => {
             if (email != null || password != null) {
-              console.log(email + " " + password);
               signIn();
             }
           }}
@@ -100,14 +100,14 @@ export const LoginScreen = ({ navigation }) => {
           }
           type="block"
           onPress={() => {
-            console.log(email + " " + password);
             signIn();
           }}
         />
         <CustomButton
           title="Go Back"
+          disabled={status == "Login" ? false : true}
           onPress={() => {
-            navigation.navigate("HomeScreen", auth);
+            navigation.pop();
           }}
         />
       </View>

@@ -19,15 +19,12 @@ import { CustomText } from "../../components/customText";
 export const DeleteFirestore = ({ navigation }) => {
   const [docName, setDocName] = useState();
   const [dataArr, setDataArr] = useState([]);
+  const [enable, setEnable] = useState(true);
 
   var docArr = [];
-  useEffect(() => {
-    // function to load here
-    // getAllFirestoreData("Pokemon");
-    // console.log(myfirestore.listCollections());
-  }, []);
+  useEffect(() => {}, []);
 
-  const createAlert = (doc1Name) => {
+  const createAlertAsk = (doc1Name) => {
     Alert.alert(
       "Are you sure",
       `You want to delete this record from Firestore\n! All The data from ${doc1Name} object will be deleted.
@@ -43,15 +40,33 @@ export const DeleteFirestore = ({ navigation }) => {
             //   Delete data from firestore and load again
             const myDoc = doc(myfirestore, docName, doc1Name);
             deleteDoc(myDoc)
-              .then(console.log("Deleted", doc1Name))
+              .then(() => {
+                console.log("Deleted", doc1Name);
+                navigation.pop();
+              })
               .catch((err) => {
                 console.log("ERROR----------------------------", err);
               });
-            populateData(docName);
           },
         },
       ]
     );
+  };
+
+  const createAlert = (title, desc) => {
+    var text = "Try Again";
+    if (title == "Success") {
+      text = "Ok";
+    }
+    Alert.alert(title, desc, [
+      {
+        text: text,
+        onPress: () => {
+          setEnable(true);
+          return;
+        },
+      },
+    ]);
   };
 
   const RenderRocords = ({ item }) => {
@@ -60,7 +75,7 @@ export const DeleteFirestore = ({ navigation }) => {
       <TouchableOpacity
         onPress={() => {
           //   createAlert(item[0].doc, item.id, item.name);
-          createAlert(title);
+          createAlertAsk(title);
         }}
       >
         <View style={styles.listContainer}>
@@ -81,10 +96,30 @@ export const DeleteFirestore = ({ navigation }) => {
     return <RenderRocords item={item} />;
   };
 
+  const checkInput = () => {
+    // console.log("Docname: " + docName);
+    setEnable(false);
+
+    if (docName == null || docName.trim().length == 0) {
+      createAlert("Error", "Please enter document name to search");
+      setEnable(true);
+      return;
+    }
+    populateData(docName);
+  };
+
   const populateData = async (docName) => {
     var count = 0;
     const coll = collection(myfirestore, docName);
     const querySnapshot = await getDocs(coll);
+    const dRec = JSON.stringify(querySnapshot._snapshot.docChanges); // * if empty length is 0
+    if (dRec.length == 2) {
+      console.log("Length: " + dRec.length);
+      createAlert("Error", "Incorrect Document Name");
+      docArr = [];
+      setEnable(true);
+      return;
+    }
     docArr = [];
     querySnapshot.forEach((doc) => {
       const keys = Object.keys(doc.data());
@@ -96,6 +131,7 @@ export const DeleteFirestore = ({ navigation }) => {
       docArr.push(dArr);
     });
     setDataArr([...docArr]);
+    setEnable(true);
   };
 
   return (
@@ -103,10 +139,12 @@ export const DeleteFirestore = ({ navigation }) => {
       <View>
         <Text style={styles.headingText}>Delete from Firestore</Text>
         <CustomInput
+          editable={enable}
           placeholder="Document Name "
           onChangeText={(newText) => setDocName(newText)}
           onSubmitEditing={async () => {
-            populateData(docName);
+            // populateData(docName);
+            checkInput();
           }}
         />
       </View>
@@ -120,6 +158,7 @@ export const DeleteFirestore = ({ navigation }) => {
       )}
 
       <CustomButton
+        disabled={!enable}
         title="Go Back"
         onPress={() => {
           navigation.pop();

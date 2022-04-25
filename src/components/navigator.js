@@ -19,6 +19,7 @@ import { UpdateSelection } from "../screens/update/updateSelection";
 import { UpdateRealtime } from "../screens/update/updateRealtime";
 import { UpdateFirestore } from "../screens/update/updateFirestore";
 import { UpdateInput } from "../screens/update/screen/updateInput";
+import { UpdateInputRealtime } from "../screens/update/screen/updateInputRealtime";
 
 import { DeleteSelection } from "../screens/delete/deleteSelection";
 import { DeleteFirestore } from "../screens/delete/deleteFirestore";
@@ -53,6 +54,10 @@ export const Navigator = () => {
       <HomeStack.Screen name="UpdateFirestore" component={UpdateFirestore} />
       <HomeStack.Screen name="UpdateRealtime" component={UpdateRealtime} />
       <HomeStack.Screen name="UpdateInput" component={UpdateInput} />
+      <HomeStack.Screen
+        name="UpdateInputRealtime"
+        component={UpdateInputRealtime}
+      />
 
       <HomeStack.Screen name="DeleteSelection" component={DeleteSelection} />
       <HomeStack.Screen name="DeleteFirestore" component={DeleteFirestore} />

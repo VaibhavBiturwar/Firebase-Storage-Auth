@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { auth, db } from "../firebaseconfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, onValue, set } from "firebase/database";
+import { ref, set } from "firebase/database";
 
 // yarn add @react-native-community/datetimepicker
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -42,35 +42,60 @@ export const RegisterScreen = ({ navigation }) => {
 
   // Functions
   const registerUser = () => {
+    setStatus("Registering...");
     // console.log(email + " " + pass + " " + cPass);
+
     if (
-      fName.length == 0 ||
-      lName.length == 0 ||
-      email.length == 0 ||
+      fName == null ||
+      fName.trim().length == 0 ||
+      lName == null ||
+      lName.trim().length == 0 ||
+      email == null ||
+      email.trim().length == 0 ||
       dob == "Date of Birth"
     ) {
       Alert.alert("Error", "Please provide all values", [
         {
           text: "Try Again",
           onPress: () => {
+            setStatus("Register");
             return;
           },
         },
       ]);
     } else if (pass == cPass) {
-      setStatus("Registering...");
       createUserWithEmailAndPassword(auth, email, pass)
         .then(() => {
           console.log("New User Created :");
           // save data from here using user id
           setUserDetails();
           // setNewAccountStatus("New User Created");
+          Alert.alert("Success", "User Created", [
+            {
+              text: "Login to proceed",
+              onPress: () => {
+                navigation.replace("LoginScreen"); // ! login check
+                navigation;
+                return;
+              },
+            },
+          ]);
         })
         .catch((e) => {
-          console.log("User not created ", e.toString());
-          //   setNewAccountStatus("User not Created");
+          setStatus("Register");
+          // console.log("User not created ", e.toString());
+          const message = "User not created\n" + e.toString().split(" ")[3];
+          Alert.alert("Error", message, [
+            {
+              text: "Try Again",
+              onPress: () => {
+                return;
+              },
+            },
+          ]);
         });
     } else {
+      setStatus("Register");
       Alert.alert("Error", "Password did not match", [
         {
           text: "Try Again",
@@ -119,10 +144,12 @@ export const RegisterScreen = ({ navigation }) => {
         <CustomInput
           placeholder="First Name"
           onChangeText={(newText) => setFName(newText)}
+          editable={status != "Register" ? false : true}
         />
         <CustomInput
           placeholder="Last Name"
           onChangeText={(newText) => setLName(newText)}
+          editable={status != "Register" ? false : true}
         />
         <CustomInput
           placeholder="Email"
@@ -130,6 +157,7 @@ export const RegisterScreen = ({ navigation }) => {
           returnKeyType="next"
           autoCapitalize="none"
           onChangeText={(newText) => setEmail(newText)}
+          editable={status != "Register" ? false : true}
         />
 
         {/* Date Picker */}
@@ -137,6 +165,7 @@ export const RegisterScreen = ({ navigation }) => {
           title={dob}
           type="block"
           onPress={() => setOpenDatePicker(true)}
+          disabled={status == "Register" ? false : true}
         />
         {openDatePicker && (
           <DateTimePicker
@@ -145,6 +174,7 @@ export const RegisterScreen = ({ navigation }) => {
             mode="date"
             is24Hour={false}
             onChange={selectDOB}
+            disabled={status == "Register" ? false : true}
           />
         )}
 
@@ -169,22 +199,26 @@ export const RegisterScreen = ({ navigation }) => {
           ]}
           testID="gender-switch-selector"
           accessibilityLabel="gender-switch-selector"
+          disabled={status == "Register" ? false : true}
         />
 
         <CustomInput
           placeholder="Password"
           secureTextEntry={true}
           onChangeText={(newText) => setPass(newText)}
+          editable={status != "Register" ? false : true}
         />
         <CustomInput
           placeholder="Confirm Password"
           secureTextEntry={true}
           onChangeText={(newText) => setCPass(newText)}
+          editable={status != "Register" ? false : true}
         />
       </View>
       <View>
         <CustomButton
-          title="Register"
+          disabled={status == "Register" ? false : true}
+          title={status}
           type="block"
           onPress={() => {
             registerUser();
@@ -206,9 +240,10 @@ export const RegisterScreen = ({ navigation }) => {
           }}
         />
         <CustomButton
+          disabled={status == "Register" ? false : true}
           title="Go Back"
           onPress={() => {
-            navigation.navigate("HomeScreen");
+            navigation.pop();
           }}
         />
       </View>

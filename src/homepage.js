@@ -11,7 +11,7 @@ import {
   orderByKey,
 } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { ref, onValue, set, remove } from "firebase/database";
+import { ref, onValue, set, remove, update } from "firebase/database";
 
 // Local Import
 import { auth, db, myfirestore } from "./firebaseconfig";
@@ -127,13 +127,30 @@ export const Homepage = () => {
       });
   };
 
+  const updateRealtime = () => {
+    // * same as creation
+    const timestamp = new Date();
+    console.log(timestamp.getTime());
+    const vals = {
+      Status: "System Updates",
+      saveTimestamp: timestamp.getTime(),
+    };
+    set(ref(db, "Testing/qzn34y2wv"), vals)
+      .then(() => {
+        console.log("Updated Realtime: ");
+      })
+      .catch((err) => {
+        console.log("Error: ", err);
+      });
+  };
+
   return (
     <View>
       {/* <HomeScreen /> */}
       {/* <LoginScreen /> */}
       {/* <RegisterScreen /> */}
       {/* <Navigator /> */}
-      <Button title="Press" onPress={deleteFromRealTime} />
+      <Button title="Press" onPress={updateRealtime} />
     </View>
   );
 };

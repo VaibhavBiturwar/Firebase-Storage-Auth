@@ -6,6 +6,7 @@ import {
   FlatList,
   StatusBar,
   Dimensions,
+  Alert,
 } from "react-native";
 import { collection, getDocs } from "firebase/firestore";
 
@@ -17,13 +18,26 @@ import { CustomText } from "../../components/customText";
 export const ReadFirestore = ({ navigation }) => {
   const [docName, setDocName] = useState();
   const [dataArr, setDataArr] = useState([]);
+  const [enable, setEnable] = useState(true);
 
   var docArr = [];
-  useEffect(() => {
-    // function to load here
-    // getAllFirestoreData("Pokemon");
-    // console.log(myfirestore.listCollections());
-  }, []);
+  useEffect(() => {}, []);
+
+  const createAlert = (title, desc) => {
+    var text = "Try Again";
+    if (title == "Success") {
+      text = "Ok";
+    }
+    Alert.alert(title, desc, [
+      {
+        text: text,
+        onPress: () => {
+          setEnable(true);
+          return;
+        },
+      },
+    ]);
+  };
 
   const RenderRocords = ({ item }) => {
     return (
@@ -44,10 +58,29 @@ export const ReadFirestore = ({ navigation }) => {
     return <RenderRocords item={item} />;
   };
 
+  const checkInput = () => {
+    // console.log("Docname: " + docName);
+    setEnable(false);
+
+    if (docName == null || docName.trim().length == 0) {
+      createAlert("Error", "Please enter document name to search");
+      setEnable(true);
+      return;
+    }
+    populateData(docName);
+  };
+
   const populateData = async (docName) => {
     var count = 0;
     const coll = collection(myfirestore, docName);
+
     const querySnapshot = await getDocs(coll);
+    const dRec = JSON.stringify(querySnapshot._snapshot.docChanges); // * if empty length is 0
+    if (dRec.length == 2) {
+      console.log("Length: " + dRec.length);
+      createAlert("Error", "Incorrect Document Name");
+      return;
+    }
     docArr = [];
     querySnapshot.forEach((doc) => {
       const keys = Object.keys(doc.data());
@@ -59,6 +92,7 @@ export const ReadFirestore = ({ navigation }) => {
       docArr.push(dArr);
     });
     setDataArr([...docArr]);
+    setEnable(true);
   };
 
   return (
@@ -66,10 +100,11 @@ export const ReadFirestore = ({ navigation }) => {
       <View>
         <Text style={styles.headingText}>Read Firestore</Text>
         <CustomInput
+          editable={enable}
           placeholder="Document Name "
           onChangeText={(newText) => setDocName(newText)}
           onSubmitEditing={async () => {
-            populateData(docName);
+            checkInput();
           }}
         />
       </View>
@@ -83,6 +118,7 @@ export const ReadFirestore = ({ navigation }) => {
       )}
 
       <CustomButton
+        disabled={!enable}
         title="Go Back"
         onPress={() => {
           navigation.pop();

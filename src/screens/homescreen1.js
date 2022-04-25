@@ -8,7 +8,7 @@ export const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     // function to load here
 
-    console.log(auth);
+    console.log("Auth in FirstScreen\n", auth);
     if (auth.currentUser != undefined) {
       console.log("Navigating to Options Screen");
       navigation.replace("OptionsScreen");
@@ -21,14 +21,14 @@ export const HomeScreen = ({ navigation }) => {
         <CustomButton
           title="Login"
           onPress={() => {
-            navigation.replace("LoginScreen");
+            navigation.navigate("LoginScreen");
           }}
         />
         <CustomButton
           title="Register"
           type="block"
           onPress={() => {
-            navigation.replace("RegisterScreen");
+            navigation.navigate("RegisterScreen");
           }}
         />
       </View>

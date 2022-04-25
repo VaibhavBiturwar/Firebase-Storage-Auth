@@ -25,13 +25,19 @@ export const ReadRealtime = ({ navigation }) => {
     Alert.alert(title, desc, [
       {
         text: text,
-        onPress: () => {},
+        onPress: () => {
+          setEditing(true);
+        },
       },
     ]);
   };
 
   const getAllRealtimeDbData = (search) => {
     setEditing(false);
+    if (search == null || search.length == 0) {
+      createAlert("Error", "Please enter document name to search");
+      return;
+    }
     const starCountRef = ref(db, "/");
     onValue(starCountRef, (snapshot) => {
       const fbObject = snapshot.child(search).val();
@@ -88,10 +94,12 @@ export const ReadRealtime = ({ navigation }) => {
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           ListEmptyComponent={<Text>No Data</Text>}
+          showsVerticalScrollIndicator={false}
         />
       )}
 
       <CustomButton
+        disabled={!editing}
         title="Go Back"
         onPress={() => {
           navigation.pop();

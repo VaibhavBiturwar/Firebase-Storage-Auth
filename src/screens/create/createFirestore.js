@@ -24,7 +24,6 @@ export const CreateFirestore = ({ navigation }) => {
   const createAlert = (title, desc) => {
     var text = "Try Again";
     if (title == "Success") {
-      // ! updated ==
       text = "Ok";
     }
     Alert.alert(title, desc, [
@@ -39,6 +38,7 @@ export const CreateFirestore = ({ navigation }) => {
 
   const createRecord = () => {
     setStatus("Creating Firestore Record...");
+
     if (
       cName == null ||
       cName.trim().length == 0 ||

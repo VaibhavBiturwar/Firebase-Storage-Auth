@@ -23,7 +23,7 @@ export const CreateRealtime = ({ navigation }) => {
   //  functions
   const createAlert = (title, desc) => {
     var text = "Try Again";
-    if ((title = "Success")) {
+    if (title == "Success") {
       text = "Ok";
     }
     Alert.alert(title, desc, [

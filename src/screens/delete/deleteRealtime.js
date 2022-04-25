@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Dimensions,
   Alert,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
 import { ref, onValue, remove } from "firebase/database";
 
@@ -18,10 +19,13 @@ import CustomInput from "../../components/customInput";
 
 export const DeleteRealtime = ({ navigation }) => {
   const [data, setData] = useState(null);
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState(null);
   const [editing, setEditing] = useState(true);
+  const [checkSearch, setCheckSearch] = useState(true);
 
   const createAlert = (title, desc) => {
+    // if (!checkSearch) return;
+
     if (title == "Delete") {
       Alert.alert(title, desc, [
         {
@@ -30,12 +34,20 @@ export const DeleteRealtime = ({ navigation }) => {
         },
         {
           text: "Yes",
-          onPress: () => {
+          onPress: async () => {
+            navigation.pop();
+            setCheckSearch(false);
+            console.log("in Alert ", checkSearch);
             // Delete from realtime DB and reload
             const path = search + "/" + desc.split("-")[1];
-            remove(ref(db, path))
+
+            await remove(ref(db, path))
               .then(() => {
                 // Reloading data in List
+                // ToastAndroid.show(
+                //   "Record Deleted Successfully",
+                //   ToastAndroid.LONG
+                // );
               })
               .catch((err) => {
                 console.log("Error Deleteing from Realtime DB: ", err);
@@ -48,7 +60,9 @@ export const DeleteRealtime = ({ navigation }) => {
       Alert.alert(title, desc, [
         {
           text: text,
-          onPress: () => {},
+          onPress: () => {
+            setEditing(true);
+          },
         },
       ]);
     }
@@ -56,11 +70,18 @@ export const DeleteRealtime = ({ navigation }) => {
 
   const getAllRealtimeDbData = (search) => {
     console.log("Search value in Get: ", search);
+    if (!checkSearch) return false;
     setEditing(false);
+    if (search == null || search.length == 0) {
+      createAlert("Error", "Please enter document name to search");
+      return;
+    }
     const starCountRef = ref(db, "/");
     onValue(starCountRef, (snapshot) => {
       const fbObject = snapshot.child(search).val();
-      if (fbObject == null) {
+      if (!checkSearch) return false;
+      if (fbObject == null && checkSearch) {
+        console.log("In IfFOBJ: ", search, checkSearch);
         createAlert("Error", "Document Name Incorrect");
         setEditing(true);
         return;
