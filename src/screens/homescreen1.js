@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { onAuthStateChanged } from "firebase/auth";
 
 import { CustomButton } from "../components/customButton";
 import { auth } from "../firebaseconfig";
@@ -8,7 +9,18 @@ export const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     // function to load here
 
-    console.log("Auth in FirstScreen\n", auth);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // console.log("OnAuth: ", user);
+        console.log("onAuth ");
+        console.log("Navigating to Options Screen");
+        navigation.replace("OptionsScreen");
+      } else {
+        console.log("on Auth False");
+      }
+    });
+
+    // console.log("Auth in FirstScreen\n", auth);
     if (auth.currentUser != undefined) {
       console.log("Navigating to Options Screen");
       navigation.replace("OptionsScreen");
